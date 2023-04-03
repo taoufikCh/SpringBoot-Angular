@@ -1,0 +1,115 @@
+<div class="container mt-2">
+    <ng-container *ngIf="pays as listPays; else failureOrLading">
+      <div class="card">
+        <div class="card-header">Pays</div>
+        <div class="card-body">
+          <div class="d-grid col-6 mx-auto justify-content-md-end p-3"> 
+            <a routerLink="/addCountry" class="btn btn-primary">
+              <i class="bi bi-plus-square m-2"></i>Ajouter
+            </a>
+          </div>
+          <div *ngIf="searchFormGroup" class="p-3">
+            <form [formGroup]="searchFormGroup" (ngSubmit)="handleSearchPays()">
+              <div class="input-group">
+                <label class="input-group-text">Mot clé </label>
+                <input type="text" formControlName="keyword" [(ngModel)]="keyword" class="form-control">
+                <button class="btn btn-info">
+                  <i class="bi bi-search"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+          
+          Nombre par page:
+          <select (change)="handlePageSizeChange($event)">
+            <option *ngFor="let size of pageSizes" [ngValue]="size">
+              {{ size }}
+            </option>
+          </select>
+          <table class="table">
+            <thead>
+            <tr>
+              <th>ID</th><th>Name</th><th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="
+              let p of pays | paginate : {
+                      itemsPerPage: pageSize,
+                      currentPage: page,
+                      totalItems: count
+                    };
+              ">
+              <td>{{p.id}}</td>
+              <td>{{p.nom}}</td>
+              <td>
+                <button (click)="deleteCountry(p)" class="btn btn-danger m-1">
+                  <i class="bi bi-trash"></i>
+                </button>
+                <button class='btn btn-success' (click)="openEditModal(mymodal, p)">
+                  <i class="bi bi-pencil-square"></i>
+                </button> 
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        
+        <div class="col-md-12">
+          <pagination-controls
+            previousLabel="Pre"
+            nextLabel="Suiv"
+            [responsive]="true"
+            (pageChange)="handlePageChange($event)"
+          ></pagination-controls>
+        </div>
+       
+          
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #failureOrLading>
+      <ng-container *ngIf="errorMessage; else loading">
+        <div class="text-danger">
+          {{errorMessage}}
+        </div>
+      </ng-container>
+      <ng-template #loading>
+        Loading .....
+      </ng-template>
+    </ng-template>
+  </div>
+   
+  <ng-template #mymodal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Mise à jour d'un pays</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('cancel')">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <form [formGroup]="paysUpdateform">  
+        
+      <!-- Modal body -->  
+      <div class="modal-body" >  
+          <div *ngIf="paysinfo">    
+              <div class="form-group">  
+                  <label for="name">Nom du pays</label>  
+                  <input type="text" class="form-control"  formControlName="nom" [(ngModel)]="paysinfo.nom"  >
+                  <span class="text-danger"
+                      *ngIf="paysUpdateform.controls['nom'].touched
+                      && paysUpdateform.controls['nom'].errors
+                      && paysUpdateform.controls['nom'].errors!['required']">
+                      Nom du pays est obligatoire
+                  </span>  
+              </div>                  
+            </div>          
+            <div *ngIf="!paysinfo"> test  </div>   
+      </div>  
+        
+      <!-- Modal footer -->  
+      <div class="modal-footer" >  
+        <button type="submit" class="btn btn-success" [disabled]="!paysUpdateform.valid" (click)="modal.close('save')" >Mettre à jour</button>  
+        <button type="button" class="btn btn-danger" (click)="modal.dismiss('cancel')">Fermer</button> 
+      </div>  
+        
+  </form>  
+  </ng-template>

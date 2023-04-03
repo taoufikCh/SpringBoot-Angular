@@ -1,0 +1,13 @@
+.navbar-nav > li:last-child
+{
+    float:right;
+}
+li> a{
+    
+    color: #FFbb00;
+}
+.navbar-brand{
+    color: #FFbb00;
+font-family: Audiowide;
+font-weight: normal;
+}

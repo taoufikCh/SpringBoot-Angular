@@ -1,0 +1,31 @@
+  <div class="background-wrap">
+    <div class="background"></div>
+  </div>
+ 
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()" >
+    <h1 id="litheader">Mini football</h1>
+    <div class="inset">
+      <p>
+        <input type="text" id="username" formControlName="username" placeholder="Tapez votre nom d'utilisateur"  placeholder="Nom d'utilisateur">
+        <span class="text-danger"
+                  *ngIf="loginForm.controls['username'].touched
+                  && loginForm.controls['username'].errors
+                  && loginForm.controls['username'].errors!['required']">
+              Ce champs est obligatoire
+            </span>
+      </p>
+      <p>
+        <input type="password"  id="password" formControlName="password" placeholder="Tapez votre mot de passe">
+        <span class="text-danger"
+            *ngIf="loginForm.controls['password'].touched
+              && loginForm.controls['password'].errors
+              && loginForm.controls['password'].errors!['required']">
+              Ce champs est obligatoire
+        </span>
+      </p>
+    </div>
+    <p class="p-container">
+      <input type="submit" [disabled]="!loginForm.valid" id="go" value="Se connecter">
+    </p>
+  </form>

@@ -1,0 +1,238 @@
+<div class="container mt-2">
+    <div class="p-3 d-grid gap-2 d-md-flex justify-content-md-end" > 
+        <a (click)="openAddModal(modelAddForm)" class="btn btn-primary" >
+          <i class="bi bi-plus m-2"></i>Ajouter
+        </a>
+    </div>
+    
+      <div class="card">
+        <div class="card-header"><b>Liste des entraineurs</b></div>
+        <ng-container *ngIf="entraineurs ; else failureOrLading">
+            <div class="card-body">
+                <div *ngIf="searchFormGroup" class="p-3">
+                    <form [formGroup]="searchFormGroup" (ngSubmit)="handleSearch()">
+                        <div class="input-group">
+                            <label class="input-group-text">Mot clé </label>
+                            <input type="text" formControlName="keyword" class="form-control">
+                            <button class="btn btn-info">
+                            <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="alert alert-success" role="alert" *ngIf="showSuccessAlert">
+                  <b>Succès :</b> {{messageContent}}.
+                </div>
+                <table class="table striped-table">
+                    <thead>
+                    <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Date Naissance</th>
+                    <th>Salaire</th>
+                    <th>Pays</th>
+                    <th>Nbre matchs joués</th>
+                    <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let row of entraineurs | async ">
+                    <td>{{row.id}}</td>
+                    <td>{{row.nom}}</td>
+                    <td>{{row.prenom}}</td>
+                    <td>{{row.dateNaissance}}</td>
+                    <td>{{row.salaire}}</td>
+                    <td >{{row?.pays?.nom}}</td>
+                    <td>{{row.nombreMatchsJoues}}</td>
+                    <td>
+                      <button (click)="deleteRow(row)" class="btn btn-danger">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                      <button class='btn btn-success m-1' (click)="openEditModal(rowEditModal, row)">
+                        <i class="bi bi-pencil-square"></i>
+                      </button> 
+                    </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </ng-container>
+        <ng-template #failureOrLading>
+            <ng-container *ngIf="errorMessage; else loading">
+                <div class="alert alert-primary mt-3 m-3" role="alert">
+                    <span class="alert-link"><b>Info </b></span>aucune données 
+                </div>
+            </ng-container>
+            <ng-template #loading>
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </ng-template>
+        </ng-template>
+      </div>
+    
+    
+  </div>
+   
+  <ng-template #rowEditModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Mise à jour d'un entraineur</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('cancel')">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <form [formGroup]="updateform">  
+        
+      <!-- Modal body -->  
+      <div class="modal-body" >  
+          <div *ngIf="entraineurInfo">    
+              <div class="form-floating mb-2">
+                <input type="text" class="form-control" id="floatingNom" formControlName="nom" [(ngModel)]="entraineurInfo.nom"  placeholder="nom">
+                <label for="floatingNom">Nom</label>
+                <span class="text-danger"
+                *ngIf="f['nom'].touched
+                && f['nom'].errors
+                && f['nom'].errors!['required']">
+                Ce champs est obligatoire
+            </span>
+          
+          </div> 
+            <div class="form-floating mb-2">
+                <input type="text" class="form-control" id="floatingPrenom" formControlName="prenom" [(ngModel)]="entraineurInfo.prenom"  placeholder="prenom">
+                <label for="floatingPrenom">Prénom</label>
+                <span class="text-danger"
+                *ngIf="f['prenom'].touched
+                && f['prenom'].errors
+                && f['prenom'].errors!['required']">
+                Ce champs est obligatoire
+          </span>
+                
+            </div>  
+            <div class="form-floating mb-2">
+                <input type="date" class="form-control" id="floatingDateN" formControlName="dateNaissance" [(ngModel)]="entraineurInfo.dateNaissance" >
+                <label for="floatingDateN">Date Naissance</label>
+                <span class="text-danger"
+                *ngIf="f['dateNaissance'].touched
+                && f['dateNaissance'].errors
+                && f['dateNaissance'].errors!['required']">
+                Ce champs est obligatoire
+            </span>
+            </div> 
+            <div class="mb-2">
+                <select class="form-control" aria-label="Default select example"  [compareWith]="compareFn" formControlName="pays" [(ngModel)]="entraineurInfo.pays">
+                    <option selected>Choisir un pays</option>
+                    <option *ngFor="let p of payss " [ngValue]="p" >
+                        {{p.nom}}
+                    </option>
+                </select>
+                <span class="text-danger"
+                *ngIf="f['pays'].touched
+                && f['pays'].errors
+                && f['pays'].errors!['required']">
+                Ce champs est obligatoire
+          </span>
+            </div>
+            <div class="form-floating mb-2">
+                <input type="text" class="form-control" id="floatingSalaire" formControlName="salaire"  placeholder="Salaire" [(ngModel)]="entraineurInfo.salaire">
+                <label for="floatingSalaire">Salaire</label>
+                <span class="text-danger"
+                *ngIf="FormAdd.controls['salaire'].touched
+                && FormAdd.controls['salaire'].errors
+                && FormAdd.controls['salaire'].errors!['required']">
+            Ce champs est obligatoire
+          </span>
+               
+            </div>                   
+            </div>           
+      </div>  
+        
+      <!-- Modal footer -->  
+      <div class="modal-footer" >  
+        <button type="submit" class="btn btn-success" [disabled]="!updateform.valid" (click)="modal.close('save')" >Mettre à jour</button>  
+        <button type="button" class="btn btn-danger" (click)="modal.dismiss('cancel')">Fermer</button> 
+      </div>  
+        
+  </form>  
+  </ng-template>
+
+  <ng-template #modelAddForm let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Ajouter un entraineur</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('cancel')">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <form [formGroup]="FormAdd">  
+        
+      <!-- Modal body -->  
+      <div class="modal-body" >  
+            <div class="form-floating mb-2">
+                <input type="text" class="form-control" id="floatingNom" formControlName="nom"  placeholder="nom">
+                <label for="floatingNom">Nom</label>
+                <span class="text-danger"
+                *ngIf="f['nom'].touched
+                && f['nom'].errors
+                && f['nom'].errors!['required']">
+                Ce champs est obligatoire
+            </span>
+          
+          </div> 
+            <div class="form-floating mb-2">
+                <input type="text" class="form-control" id="floatingPrenom" formControlName="prenom"  placeholder="prenom">
+                <label for="floatingPrenom">Prénom</label>
+                <span class="text-danger"
+                *ngIf="f['prenom'].touched
+                && f['prenom'].errors
+                && f['prenom'].errors!['required']">
+                Ce champs est obligatoire
+          </span>
+                
+            </div>  
+            <div class="form-floating mb-2">
+                <input type="date" class="form-control" id="floatingDateN" formControlName="dateNaissance" >
+                <label for="floatingDateN">Date Naissance</label>
+                <span class="text-danger"
+                *ngIf="f['dateNaissance'].touched
+                && f['dateNaissance'].errors
+                && f['dateNaissance'].errors!['required']">
+                Ce champs est obligatoire
+          </span>
+            </div> 
+            <div class="mb-2">
+                <select class="form-control" aria-label="Default select example" formControlName="pays" >
+                    <option selected>Choisir un pays</option>
+                    <option *ngFor="let p of payss " [ngValue]="p">
+                        {{p.nom}}
+                    </option>
+                </select>
+                <span class="text-danger"
+                *ngIf="f['pays'].touched
+                && f['pays'].errors
+                && f['pays'].errors!['required']">
+                Ce champs est obligatoire
+          </span>
+            </div>
+            <div class="form-floating mb-2">
+                <input type="text" class="form-control" id="floatingSalaire" formControlName="salaire"  placeholder="Salaire">
+                <label for="floatingSalaire">Salaire</label>
+                <span class="text-danger"
+                *ngIf="FormAdd.controls['salaire'].touched
+                && FormAdd.controls['salaire'].errors
+                && FormAdd.controls['salaire'].errors!['required']">
+            Ce champs est obligatoire
+          </span>
+               
+            </div>               
+        </div>            
+        
+      <!-- Modal footer -->  
+      <div class="modal-footer" >  
+        <button type="submit" class="btn btn-primary" [disabled]="!FormAdd.valid" (click)="modal.close('save')" >Enregistrer</button>  
+        <button type="button" class="btn btn-danger" (click)="modal.dismiss('cancel')">Fermer</button> 
+      </div>  
+        
+  </form>  
+  </ng-template>
